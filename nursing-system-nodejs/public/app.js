@@ -382,6 +382,7 @@ class NursingSystemApp {
 
             const result = await response.json();
             
+            
             if (result.success) {
                 this.showConfirmDialog(result.preview, config);
             } else {
@@ -472,6 +473,7 @@ class NursingSystemApp {
         // 绑定确认按钮事件
         document.getElementById('confirmStart').addEventListener('click', () => {
             modal.hide();
+            Object.assign(config,{taskId:preview.taskId})
             this.executeProcess(config);
         });
         
