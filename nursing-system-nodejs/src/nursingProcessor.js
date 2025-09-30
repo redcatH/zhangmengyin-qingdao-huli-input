@@ -301,7 +301,7 @@ export class NursingProcessor {
 
                 // 进度回调
                 if (progressCallback) {
-                    progressCallback(i + 1, stats);
+                    progressCallback(i + 1, stats, stats.skipped);
                 }
 
                 // 每10个用户输出一次进度

@@ -216,7 +216,7 @@ class NursingRegistrationSystem {
 
             const { stats, failedUsers } = await this.processor.batchProcessUsers(
                 users,
-                (current, currentStats) => {
+                (current, currentStats,skipcount) => {
                     // Web模式的进度回调
                     const progress = 20 + Math.floor((current / users.length) * 70);
                     if (this.onProgress) {

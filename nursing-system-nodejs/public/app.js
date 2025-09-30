@@ -87,7 +87,25 @@ class NursingSystemApp {
 
         this.socket.on('process-complete', (data) => {
             this.hideProgress();
-            this.addLog('处理完成！', 'success');
+
+            // data should contain { historyId, result }
+            const result = data && data.result ? data.result : (data || {});
+
+            // Extract statistics safely
+            const stats = (result && result.statistics) ? result.statistics : {};
+            const total = stats.total ?? '-';
+            const success = stats.success ?? '-';
+            const skipped = stats.skipped ?? 0;
+            const failed = stats.failed ?? '-';
+            const successRate = stats.successRate ?? '-';
+
+            // Log a more detailed completion message
+            this.addLog(`处理完成：总 ${total}，成功 ${success}（跳过 ${skipped}），失败 ${failed}，成功率 ${successRate}%`, 'success');
+
+            // Show a short alert with summary
+            this.showAlert(`处理完成：成功 ${success}（跳过 ${skipped}），失败 ${failed}，成功率 ${successRate}%`, 'success');
+
+            // Ensure history and status refreshed
             this.loadHistory();
             this.loadSystemStatus();
         });
@@ -810,6 +828,10 @@ class NursingSystemApp {
                                     <div class="col-md-3">
                                         <h4 class="text-success">${data.result.statistics.success}</h4>
                                         <small class="text-muted">成功处理</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h4 class="text-success">${data.result.statistics.skipped}</h4>
+                                        <small class="text-muted">成功处理（跳过）</small>
                                     </div>
                                     <div class="col-md-3">
                                         <h4 class="text-danger">${data.result.statistics.failed}</h4>
