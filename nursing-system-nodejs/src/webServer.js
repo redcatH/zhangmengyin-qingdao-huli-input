@@ -189,16 +189,15 @@ class NursingWebServer {
                         message: `文件验证失败: ${error.message}` 
                     });
                 } finally {
-                    // 清理临时目录
+                    // 验证完成后不清理临时目录，保留所有文件以供后续任务重用
                     if (tempConfigPath) {
                         try {
                             const tempTaskDir = dirname(tempConfigPath);
                             if (existsSync(tempTaskDir)) {
-                                rmSync(tempTaskDir, { recursive: true, force: true });
-                                console.log('🗑️ 清理临时任务目录');
+                                console.log('📋 验证完成，保留临时目录文件以供任务使用');
                             }
-                        } catch (cleanupError) {
-                            console.warn(`清理临时目录失败: ${cleanupError.message}`);
+                        } catch (error) {
+                            console.warn(`验证后检查临时目录失败: ${error.message}`);
                         }
                     }
                 }
@@ -494,16 +493,15 @@ class NursingWebServer {
             // 发送错误事件
             this.io.emit('process-error', { historyId, error: error.message });
         } finally {
-            // 清理临时目录
+            // 不清理临时目录，保留所有文件（包括config.json和JSON数据文件）以供任务重启使用
             if (tempConfigPath) {
                 try {
                     const tempTaskDir = dirname(tempConfigPath);
                     if (existsSync(tempTaskDir)) {
-                        rmSync(tempTaskDir, { recursive: true, force: true });
-                        console.log('🗑️ 清理临时任务目录');
+                        console.log('📋 保留临时任务目录及所有文件以供任务重启使用');
                     }
-                } catch (cleanupError) {
-                    console.warn(`清理临时目录失败: ${cleanupError.message}`);
+                } catch (error) {
+                    console.warn(`检查临时目录失败: ${error.message}`);
                 }
             }
         }
