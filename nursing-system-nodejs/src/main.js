@@ -161,6 +161,153 @@ class NursingRegistrationSystem {
             }
         };
     }
+
+    /**
+     * Web模式运行 - 为Web界面提供的方法
+     * @returns {Promise<Object>} 处理结果
+     */
+    async runWeb() {
+        try {
+            const startTime = new Date().toISOString();
+            
+            this.logger.info('='.repeat(60));
+            this.logger.info('护理入住登记自动化系统启动 (Web模式)');
+            this.logger.info('='.repeat(60));
+
+            // 1. 读取用户数据
+            const users = this.dataManager.readExcelData();
+            if (!users || users.length === 0) {
+                throw new Error('无法读取用户数据或数据为空');
+            }
+
+            this.logger.info(`成功读取 ${users.length} 个用户数据`);
+
+            // 触发进度回调
+            if (this.onProgress) {
+                this.onProgress({
+                    progress: 10,
+                    message: `读取到 ${users.length} 个用户数据`,
+                    stage: 'reading'
+                });
+            }
+
+            // 2. 系统预检查
+            this.logger.info('开始系统预检查...');
+            const preflightResult = await this.processor.preflightCheck();
+            
+            if (!preflightResult.ready) {
+                throw new Error('系统预检查失败: ' + preflightResult.issues.join(', '));
+            }
+
+            this.logger.info('系统预检查通过');
+
+            // 触发进度回调
+            if (this.onProgress) {
+                this.onProgress({
+                    progress: 20,
+                    message: '系统预检查通过',
+                    stage: 'preflight'
+                });
+            }
+
+            // 3. 开始处理用户
+            this.logger.info('开始批量处理用户...');
+            const processingStartTime = Date.now();
+
+            const { stats, failedUsers } = await this.processor.batchProcessUsers(
+                users,
+                (current, currentStats) => {
+                    // Web模式的进度回调
+                    const progress = 20 + Math.floor((current / users.length) * 70);
+                    if (this.onProgress) {
+                        this.onProgress({
+                            progress,
+                            message: `处理用户 ${current}/${users.length}: ${currentStats.lastProcessedUser || ''}`,
+                            stage: 'processing',
+                            currentUser: current,
+                            totalUsers: users.length,
+                            currentStats: currentStats
+                        });
+                    }
+                }
+            );
+
+            const processingEndTime = Date.now();
+            const duration = (processingEndTime - processingStartTime) / 1000;
+
+            // 4. 完成处理
+            if (this.onProgress) {
+                this.onProgress({
+                    progress: 95,
+                    message: '处理完成，生成报告...',
+                    stage: 'finalizing'
+                });
+            }
+
+            // 导出详细报告
+            const reportFilename = this.dataManager.exportResults(stats, failedUsers);
+
+            // 5. 构建返回结果
+            const result = {
+                success: true,
+                startTime,
+                endTime: new Date().toISOString(),
+                duration,
+                statistics: {
+                    total: stats.total,
+                    success: stats.success,
+                    failed: stats.failed,
+                    skipped: stats.skipped,
+                    successRate: stats.total > 0 ? Math.round((stats.success / stats.total) * 100) : 0
+                },
+                failedUsers: failedUsers.map(user => ({
+                    name: user.name,
+                    error: user.error,
+                    details: user.details || null
+                })),
+                personnelStats: this.personnelManager.getPersonnelStats(),
+                processingSpeed: stats.total > 0 ? Math.round((stats.total / duration) * 100) / 100 : 0,
+                reportFile: reportFilename
+            };
+
+            // 最终进度回调
+            if (this.onProgress) {
+                this.onProgress({
+                    progress: 100,
+                    message: `处理完成！成功 ${stats.success}/${stats.total} 个用户`,
+                    stage: 'completed',
+                    result
+                });
+            }
+
+            this.logger.info('='.repeat(60));
+            this.logger.info('护理入住登记系统运行完成 (Web模式)');
+            this.logger.info('='.repeat(60));
+
+            return result;
+
+        } catch (error) {
+            this.logger.error(`系统运行异常: ${error.message}`);
+            
+            const errorResult = {
+                success: false,
+                error: error.message,
+                startTime: new Date().toISOString(),
+                endTime: new Date().toISOString()
+            };
+
+            if (this.onProgress) {
+                this.onProgress({
+                    progress: 0,
+                    message: `处理失败: ${error.message}`,
+                    stage: 'error',
+                    error: error.message
+                });
+            }
+
+            throw errorResult;
+        }
+    }
 }
 
 /**
@@ -230,7 +377,10 @@ process.on('SIGTERM', () => {
     process.exit(0);
 });
 
-// 直接执行主函数
-main();
+// 只有在直接运行此文件时才执行主函数
+// 检查是否是直接运行此文件，而不是被导入
+if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
+    main();
+}
 
 export { NursingRegistrationSystem };

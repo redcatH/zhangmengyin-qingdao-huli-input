@@ -13,6 +13,7 @@ export class NursingProcessor {
         this.maxRetries = config.get('retry.maxRetries', 3);
         this.retryDelay = config.get('retry.delay', 1000);
         this.nursingItemIndices = config.get('nursingItemIndices', []);
+        this.personnelDataInitialized = false; // 人员数据是否已初始化
     }
 
     /**
@@ -101,21 +102,33 @@ export class NursingProcessor {
             // 筛选护理项目
             const kh04AddDTOList = this.selectNursingItems(classifyList);
 
-            // 5. 获取和处理人员数据
-            const personnelData = await this.apiClient.queryPersonnelList("H37021106950");
-            if (!personnelData || personnelData.length === 0) {
-                return { success: false, message: "无法获取人员列表" };
+            // 5. 获取和处理人员数据（如果尚未初始化）
+            if (!this.personnelDataInitialized) {
+                this.logger.info('首次处理用户，初始化人员数据...');
+                const personnelData = await this.apiClient.queryPersonnelList("H37021106950");
+                if (!personnelData || personnelData.length === 0) {
+                    return { success: false, message: "无法获取人员列表" };
+                }
+
+                // 分类人员
+                const nurses = personnelData.filter(p => p.ckh122 === "12");
+                const doctors = personnelData.filter(p => p.ckh122 === "13");
+                const caregivers = personnelData.filter(p => p.ckh122 === "10");
+
+                this.logger.info(`获取到人员数据 - 护士: ${nurses.length}, 医生: ${doctors.length}, 护理员: ${caregivers.length}`);
+
+                // 更新人员管理器（护理员会根据配置进行过滤）
+                this.personnelManager.processPersonnelData(nurses, 'nurse', '12');
+                this.personnelManager.processPersonnelData(doctors, 'doctor', '13');
+                this.personnelManager.processPersonnelData(caregivers, 'caregiver', '10');
+                
+                // 标记人员数据已初始化
+                this.personnelDataInitialized = true;
+                
+                // 记录最终人员统计
+                const stats = this.personnelManager.getPersonnelStats();
+                this.logger.info(`人员初始化完成 - 可用护士: ${stats.nurses.total}, 可用医生: ${stats.doctors.total}, 可用护理员: ${stats.caregivers.total}`);
             }
-
-            // 分类人员
-            const nurses = personnelData.filter(p => p.ckh122 === "12");
-            const doctors = personnelData.filter(p => p.ckh122 === "13");
-            const caregivers = personnelData.filter(p => p.ckh122 === "10");
-
-            // 更新人员管理器
-            this.personnelManager.processPersonnelData(nurses, 'nurse', '12');
-            this.personnelManager.processPersonnelData(doctors, 'doctor', '13');
-            this.personnelManager.processPersonnelData(caregivers, 'caregiver', '10');
 
             // 6. 分配人员
             const nurseId = this.personnelManager.getAvailablePersonnel('nurse');
@@ -332,22 +345,11 @@ export class NursingProcessor {
                 issues.push('API连接异常');
             }
 
-            // 检查人员状态
-            const personnelStats = this.personnelManager.getPersonnelStats();
-            if (personnelStats.nurses.available === 0) {
-                issues.push('没有可用护士');
-            }
-            if (personnelStats.doctors.available === 0) {
-                issues.push('没有可用医生');
-            }
-            if (personnelStats.caregivers.available === 0) {
-                issues.push('没有可用护理员');
-            }
-
+            // 预检查阶段不检查人员数据，人员数据会在处理过程中动态获取和初始化
             return {
                 ready: issues.length === 0,
                 issues,
-                personnelStats
+                personnelStats: null // 人员统计将在处理过程中更新
             };
 
         } catch (error) {

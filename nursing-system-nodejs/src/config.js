@@ -3,7 +3,7 @@
  * 负责加载和管理系统配置
  */
 import { readFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, isAbsolute } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -11,9 +11,17 @@ const __dirname = dirname(__filename);
 
 export class Config {
     constructor(configPath = '../config.json') {
-        this.basePath = join(__dirname, '..');
-        const relativePath = configPath || '../config.json';
-        this.configFile = join(this.basePath, relativePath.replace('../', ''));
+        // 判断是否是绝对路径
+        if (isAbsolute(configPath)) {
+            // 绝对路径：临时配置文件
+            this.configFile = configPath;
+            this.basePath = dirname(configPath); // 使用配置文件所在目录作为基础路径
+        } else {
+            // 相对路径：正常配置文件
+            this.basePath = join(__dirname, '..');
+            const relativePath = configPath || '../config.json';
+            this.configFile = join(this.basePath, relativePath.replace('../', ''));
+        }
         this.config = this.loadConfig();
     }
 
@@ -104,7 +112,15 @@ export class Config {
      */
     getFilePath(fileKey) {
         const filename = this.get(`files.${fileKey}`);
-        return filename ? join(this.basePath, filename) : null;
+        if (!filename) return null;
+        
+        // 如果已经是绝对路径，直接返回
+        if (isAbsolute(filename)) {
+            return filename;
+        }
+        
+        // 相对路径时，与basePath拼接
+        return join(this.basePath, filename);
     }
 
     /**
