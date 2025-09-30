@@ -1,0 +1,17 @@
+{
+  "name": "paiban",
+  "version": "1.0.0",
+  "main": "paiban.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^17.0.0",
+    "undici": "^7.11.0",
+    "xlsx": "^0.18.5"
+  }
+}

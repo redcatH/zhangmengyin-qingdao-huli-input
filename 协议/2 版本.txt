@@ -1,0 +1,15 @@
+fetch("http://10.78.226.94:8080/static/version.json?t=1748179280422", {
+  "headers": {
+    "accept": "application/json, text/plain, */*",
+    "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "cookie": "SESSION=NDQyMjcxODYtYjFlMi00ZDE2LWI5ZTEtNjNlMWE4ODM5ZjQ3",
+    "Referer": "http://10.78.226.94:8080/",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+  },
+  "body": null,
+  "method": "GET"
+});
+
+{
+  "version": "v20250522-a"
+}

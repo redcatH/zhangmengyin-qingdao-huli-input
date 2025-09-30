@@ -1,0 +1,15 @@
+添加第二个人
+fetch("http://test.vssh.top/api/rest/nursing/kh06/scheduling", {
+  "headers": {
+    "accept": "application/json, text/plain, */*",
+    "accept-language": "zh-CN,zh;q=0.9",
+    "content-type": "application/json;charset=UTF-8",
+    "cookie": "SESSION=MDNlNGFkZGUtZjRmNy00ZDgxLWIyZTktNjY1ZjBhNmY3ZTY3",
+    "Referer": "http://test.vssh.top/",
+    "Referrer-Policy": "no-referrer-when-downgrade"
+  },
+  "body": "{\"ckh024\":1000343455,\"ckh025\":\"20250601\",\"ckh001\":1001423974,\"list\":[\"1000000269\",\"1000000260\",\"1000000271\",\"1000000272\",\"1000000520\",\"1000000519\"]}",
+  "method": "POST"
+});
+
+1001388573

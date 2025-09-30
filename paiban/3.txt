@@ -1,0 +1,128 @@
+fetch("http://test.vssh.top/api/rest/sys/AA10Dictinfo/query", {
+  "headers": {
+    "accept": "application/json, text/plain, */*",
+    "accept-language": "zh-CN,zh;q=0.9",
+    "content-type": "application/json;charset=UTF-8",
+    "cookie": "SESSION=MDNlNGFkZGUtZjRmNy00ZDgxLWIyZTktNjY1ZjBhNmY3ZTY3",
+    "Referer": "http://test.vssh.top/",
+    "Referrer-Policy": "no-referrer-when-downgrade"
+  },
+  "body": "{\"aaa100\":\"CKH007\"}",
+  "method": "POST"
+});
+
+
+[
+    {
+        "id": 1000000482,
+        "aaa100": "CKH007",
+        "aaa102": "10",
+        "aaa103": "死亡",
+        "aae030": 20190101,
+        "aae031": null,
+        "cae008": 1,
+        "aae013": "终止原因",
+        "aae100": "1",
+        "cza001": null,
+        "cza002": null,
+        "cza003": null
+    },
+    {
+        "id": 1000001718,
+        "aaa100": "CKH007",
+        "aaa102": "11",
+        "aaa103": "好转",
+        "aae030": 20190801,
+        "aae031": null,
+        "cae008": 1,
+        "aae013": "终止原因",
+        "aae100": "1",
+        "cza001": null,
+        "cza002": null,
+        "cza003": null
+    },
+    {
+        "id": 1000001719,
+        "aaa100": "CKH007",
+        "aaa102": "12",
+        "aaa103": "家属申请终止",
+        "aae030": 20190801,
+        "aae031": null,
+        "cae008": 2,
+        "aae013": "终止原因",
+        "aae100": "1",
+        "cza001": null,
+        "cza002": null,
+        "cza003": null
+    },
+    {
+        "id": 1000001720,
+        "aaa100": "CKH007",
+        "aaa102": "13",
+        "aaa103": "护理机构申请终止",
+        "aae030": 20190801,
+        "aae031": null,
+        "cae008": 3,
+        "aae013": "终止原因",
+        "aae100": "1",
+        "cza001": null,
+        "cza002": null,
+        "cza003": null
+    },
+    {
+        "id": 1000001721,
+        "aaa100": "CKH007",
+        "aaa102": "14",
+        "aaa103": "搬家",
+        "aae030": 20190801,
+        "aae031": null,
+        "cae008": 4,
+        "aae013": "终止原因",
+        "aae100": "1",
+        "cza001": null,
+        "cza002": null,
+        "cza003": null
+    },
+    {
+        "id": 1000001722,
+        "aaa100": "CKH007",
+        "aaa102": "15",
+        "aaa103": "住院",
+        "aae030": 20190801,
+        "aae031": null,
+        "cae008": 5,
+        "aae013": "终止原因",
+        "aae100": "1",
+        "cza001": null,
+        "cza002": null,
+        "cza003": null
+    },
+    {
+        "id": 1000001768,
+        "aaa100": "CKH007",
+        "aaa102": "16",
+        "aaa103": "有效期到期",
+        "aae030": 20190801,
+        "aae031": null,
+        "cae008": 6,
+        "aae013": "终止原因",
+        "aae100": "1",
+        "cza001": null,
+        "cza002": null,
+        "cza003": null
+    },
+    {
+        "id": 1000000486,
+        "aaa100": "CKH007",
+        "aaa102": "31",
+        "aaa103": "其他原因",
+        "aae030": 20190101,
+        "aae031": null,
+        "cae008": 9,
+        "aae013": "终止原因",
+        "aae100": "1",
+        "cza001": null,
+        "cza002": null,
+        "cza003": null
+    }
+]

@@ -1,0 +1,35 @@
+复制前一天
+fetch("http://test.vssh.top/api/rest/nursing/kh07/copyYesterdayKh07", {
+  "headers": {
+    "accept": "application/json, text/plain, */*",
+    "accept-language": "zh-CN,zh;q=0.9",
+    "content-type": "application/json;charset=UTF-8",
+    "cookie": "SESSION=MDNlNGFkZGUtZjRmNy00ZDgxLWIyZTktNjY1ZjBhNmY3ZTY3",
+    "Referer": "http://test.vssh.top/",
+    "Referrer-Policy": "no-referrer-when-downgrade"
+  },
+  "body": "{\"ckh001\":1001423974,\"ckh025\":\"20250602\"}",  ckh025 代表复制当前天， ckh001 是12.txt提交第一个人的时候会获取到， 或者用15.txt 获取 ckh001
+  "method": "POST"
+});
+
+true
+
+
+
+
+
+fetch("http://test.vssh.top/api/rest/nursing/kh07/copyYesterdayKh07", {
+  "headers": {
+    "accept": "application/json, text/plain, */*",
+    "accept-language": "zh-CN,zh;q=0.9",
+    "content-type": "application/json;charset=UTF-8",
+    "cookie": "SESSION=MDNlNGFkZGUtZjRmNy00ZDgxLWIyZTktNjY1ZjBhNmY3ZTY3",
+    "Referer": "http://test.vssh.top/",
+    "Referrer-Policy": "no-referrer-when-downgrade"
+  },
+  "body": "{\"ckh001\":1001424044,\"ckh025\":\"20250602\"}",
+  "method": "POST"
+});
+
+
+true

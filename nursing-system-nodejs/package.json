@@ -1,0 +1,22 @@
+{
+  "name": "nursing-registration-system",
+  "version": "1.0.0",
+  "description": "护理入住登记自动化处理系统",
+  "main": "src/main.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/main.js",
+    "dev": "node --watch src/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["nursing", "registration", "automation"],
+  "author": "Assistant",
+  "license": "MIT",
+  "dependencies": {
+    "xlsx": "^0.18.5",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+}

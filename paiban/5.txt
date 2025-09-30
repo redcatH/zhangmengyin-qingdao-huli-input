@@ -1,0 +1,91 @@
+查询排班
+fetch("http://test.vssh.top/api/rest/nursing/kh01/selectWaitSchedualPlan", {
+  "headers": {
+    "accept": "application/json, text/plain, */*",
+    "accept-language": "zh-CN,zh;q=0.9",
+    "content-type": "application/json;charset=UTF-8",
+    "cookie": "SESSION=MDNlNGFkZGUtZjRmNy00ZDgxLWIyZTktNjY1ZjBhNmY3ZTY3",
+    "Referer": "http://test.vssh.top/",
+    "Referrer-Policy": "no-referrer-when-downgrade"
+  },
+  "body": "{\"aac003\":\"姜秀美\",\"ckh005\":\"H37021106950\",\"orgName\":\"黄岛远保康诊所\",\"aac002\":\"\",\"aaz289\":370284,\"pageSize\":10,\"pageNum\":1,\"cka025\":370284}",
+  "method": "POST"
+});
+
+"aac003\":\"姜秀美\"   人物
+"ckh005\":\"H37021106950\"  固定
+
+
+{
+    "total": 1,
+    "list": [
+        {
+            "pageNum": null,
+            "pageSize": null,
+            "orderFiled": null,
+            "orderBy": null,
+            "ckh002": "2025022117193395",
+            "aac002": "370223192805126726",
+            "aac003": "姜秀美",
+            "ckh001": 1001424044,
+            "ckh004": "01",
+            "aaa027": "370284",
+            "countryName": "西海岸新区",
+            "ckh005": "H37021106950",
+            "orgName": "黄岛远保康诊所",
+            "assessedLevel": "04",
+            "ckh003": "01",
+            "aae030": 20250530,
+            "aae031": null,
+            "aab002": null,
+            "aae036": "2025-05-30 23:44:19",
+            "aae036End": null,
+            "aae036Cx": null,
+            "aae011": "1000005895",
+            "ckh012": "01",
+            "nickname": "黄岛远保康诊所",
+            "waitSchedulFlag": null,
+            "homeSelfCareFlag": null,
+            "cka025": "370284",
+            "ckh006": "37020002011",
+            "isOver": null,
+            "ckh006Str": "新一片区保险公司",
+            "ckh003Str": null,
+            "cka025Str": "西海岸新区",
+            "ckh005Str": "黄岛远保康诊所",
+            "aae030Str": "2025-05-30",
+            "aae031Str": null,
+            "ckh057Str": null,
+            "ckh101": null,
+            "ckh079": null,
+            "ckh280": null,
+            "ckh007": null,
+            "ckh007QD": null,
+            "ckf181": "06",
+            "ckg161": "01",
+            "ckg066": null,
+            "aac014": null,
+            "aac012": "150290"
+        }
+    ],
+    "pageNum": 1,
+    "pageSize": 10,
+    "size": 1,
+    "startRow": 1,
+    "endRow": 1,
+    "pages": 1,
+    "prePage": 0,
+    "nextPage": 0,
+    "isFirstPage": true,
+    "isLastPage": true,
+    "hasPreviousPage": false,
+    "hasNextPage": false,
+    "navigatePages": 8,
+    "navigatepageNums": [
+        1
+    ],
+    "navigateFirstPage": 1,
+    "navigateLastPage": 1,
+    "firstPage": 1,
+    "lastPage": 1
+}

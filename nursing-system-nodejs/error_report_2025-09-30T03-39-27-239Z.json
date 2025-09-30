@@ -1,0 +1,41 @@
+{
+  "timestamp": "2025-09-30T03:39:27.239Z",
+  "statistics": {
+    "total": 175,
+    "success": 0,
+    "failed": 2,
+    "skipped": 173
+  },
+  "failedUsers": [
+    {
+      "name": "苗玉萍",
+      "error": "用户 苗玉萍 登记失败: HTTP 400: Bad Request"
+    },
+    {
+      "name": "薛淑锡",
+      "error": "用户 薛淑锡 登记失败: HTTP 400: Bad Request"
+    }
+  ],
+  "configSnapshot": {
+    "excelFile": "入住表（刘毅用）9月.xls",
+    "personnelLimits": {
+      "nursesLimit": 50,
+      "doctorsLimit": 80,
+      "caregiversLimit": 30
+    },
+    "nursingItemIndices": [
+      0,
+      1,
+      9,
+      11,
+      13,
+      14,
+      15,
+      22,
+      27,
+      28,
+      29,
+      58
+    ]
+  }
+}

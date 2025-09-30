@@ -1,0 +1,37 @@
+{
+  "api": {
+    "baseUrl": "http://test.vssh.top/api/rest",
+    "token": "SESSION=ZTVlOTgxYWUtMzQ3Mi00ZjA4LWJjMzgtZGYyZmZjMmUzYWJk",
+    "referer": "http://10.78.226.94:8080/",
+    "timeout": 30000
+  },
+  "files": {
+    "excelFile": "入住表（刘毅用）9月.xls",
+    "nurseFile": "nurseObjs.json",
+    "doctorFile": "doctorObjs.json",
+    "caregiverFile": "caregiverObjs.json",
+    "successFile": "successfulUsers.json",
+    "errorLog": "error.log"
+  },
+  "personnel": {
+    "nursesLimit": 50,
+    "doctorsLimit": 80,
+    "caregiversLimit": 30
+  },
+  "specificCaregivers": [
+    "张梅", "卢秀萍", "刘建贞", "刘同花", "刘同秀", "刘岩",
+    "刘俊伟", "薛红", "薛光艳", "刘艳华", "薛玉英", "郎庆芳",
+    "郭爱辉", "泮瑞英", "王甜甜", "于永香", "倪晓光", "营亮平",
+    "王洁", "张本文", "刘香", "殷玉庆"
+  ],
+  "nursingItemIndices": [0, 1, 9, 11, 13, 14, 15, 22, 27, 28, 29, 58],
+  "retry": {
+    "maxRetries": 3,
+    "delay": 1000
+  },
+  "logging": {
+    "level": "info",
+    "enableConsole": true,
+    "enableFile": true
+  }
+}

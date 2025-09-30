@@ -1,0 +1,46 @@
+选择居家看护，和7.txt 类似 但是参数  ckh003\":\"01
+
+fetch("http://10.78.226.94:8080/api/rest/nursing/kh18/queryKH18", {
+  "headers": {
+    "accept": "application/json, text/plain, */*",
+    "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "content-type": "application/json;charset=UTF-8",
+    "cookie": "SESSION=NDQyMjcxODYtYjFlMi00ZDE2LWI5ZTEtNjNlMWE4ODM5ZjQ3",
+    "Referer": "http://10.78.226.94:8080/",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+  },
+  "body": "{\"ckh003\":\"01\",\"ckh057\":\"04\"}",
+  "method": "POST"
+});
+
+
+[
+    {
+        "ckh059": 1000000147,
+        "ckh060": "三级失能居家照护服务协议",
+        "ckh061": "370000",
+        "ckh062": "370200",
+        "ckh063": null,
+        "ckh057": "04",
+        "ckh003": "01",
+        "ckh064": "04",
+        "ckh065": 20.0,
+        "ckh066": 0.0,
+        "aae030": 20210331,
+        "aae031": null,
+        "aae030Str": null,
+        "aae031Str": null,
+        "aae036": "2021-03-31 22:11:27",
+        "aae011": "1000000001",
+        "validTime": null,
+        "usingRange": null,
+        "isCkh061": null,
+        "jghlTableData": null,
+        "ckh003Name": null,
+        "ckh057Name": null,
+        "ckh064Name": null,
+        "usingRangeName": null,
+        "changeFlag": null,
+        "ckh202": 1
+    }
+]

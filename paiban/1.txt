@@ -1,0 +1,19 @@
+fetch("http://test.vssh.top/api/rest/sys/kh28/check", {
+  "headers": {
+    "accept": "application/json, text/plain, */*",
+    "accept-language": "zh-CN,zh;q=0.9",
+    "cookie": "SESSION=MDNlNGFkZGUtZjRmNy00ZDgxLWIyZTktNjY1ZjBhNmY3ZTY3",
+    "Referer": "http://test.vssh.top/",
+    "Referrer-Policy": "no-referrer-when-downgrade"
+  },
+  "body": null,
+  "method": "POST"
+});
+
+{
+    "isNursingOrg": true,
+    "isDistrict": false,
+    "isCompany": false,
+    "isCity": false,
+    "isAssessOrg": false
+}

@@ -1,0 +1,29 @@
+fetch("http://test.vssh.top/api/rest/sys/region/queryRegionUserTree", {
+  "headers": {
+    "accept": "application/json, text/plain, */*",
+    "accept-language": "zh-CN,zh;q=0.9",
+    "cookie": "SESSION=MDNlNGFkZGUtZjRmNy00ZDgxLWIyZTktNjY1ZjBhNmY3ZTY3",
+    "Referer": "http://test.vssh.top/",
+    "Referrer-Policy": "no-referrer-when-downgrade"
+  },
+  "body": null,
+  "method": "GET"
+});
+
+
+[
+    {
+        "key": 370284,
+        "title": "西海岸新区",
+        "editable": null,
+        "pid": 0,
+        "url": null,
+        "icon": null,
+        "type": null,
+        "description": null,
+        "systemCode": null,
+        "deep": null,
+        "sortNo": null,
+        "children": null
+    }
+]
