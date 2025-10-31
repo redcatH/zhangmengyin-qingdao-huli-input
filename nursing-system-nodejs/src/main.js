@@ -344,7 +344,9 @@ async function main() {
     }
 
     // 创建并运行系统
-    const system = new NursingRegistrationSystem(configPath);
+    // 如果没有提供配置文件路径，使用默认值
+    const actualConfigPath = configPath || '../config.json';
+    const system = new NursingRegistrationSystem(actualConfigPath);
     
     try {
         const success = await system.run();

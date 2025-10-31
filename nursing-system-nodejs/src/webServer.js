@@ -15,6 +15,7 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname, join, relative } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, statSync, rmSync } from 'fs';
+import { createHash } from 'crypto';
 import { NursingRegistrationSystem } from './main.js';
 import { DataManager } from './dataManager.js';
 import { Config } from './config.js';
@@ -171,7 +172,7 @@ class NursingWebServer {
                         caregivers: specificCaregivers,
                         nurses: config.nurseObjs || []
                     };
-                    
+                    const taskId = tempResult.taskId
                     res.json({
                         success: true,
                         message: '参数验证成功',
@@ -180,7 +181,8 @@ class NursingWebServer {
                             sampleUsers: users.slice(0, 5).map(u => u.姓名 || u.name || '未知'),
                             personnelStats,
                             caregiverCount: specificCaregivers.length,
-                            estimatedTime: Math.ceil(users.length / 20) // 预估处理时间（秒）
+                            estimatedTime: Math.ceil(users.length / 20), // 预估处理时间（秒）
+                            taskId:taskId
                         }
                     });
                 } catch (error) {
@@ -189,16 +191,15 @@ class NursingWebServer {
                         message: `文件验证失败: ${error.message}` 
                     });
                 } finally {
-                    // 清理临时目录
+                    // 验证完成后不清理临时目录，保留所有文件以供后续任务重用
                     if (tempConfigPath) {
                         try {
                             const tempTaskDir = dirname(tempConfigPath);
                             if (existsSync(tempTaskDir)) {
-                                rmSync(tempTaskDir, { recursive: true, force: true });
-                                console.log('🗑️ 清理临时任务目录');
+                                console.log('📋 验证完成，保留临时目录文件以供任务使用');
                             }
-                        } catch (cleanupError) {
-                            console.warn(`清理临时目录失败: ${cleanupError.message}`);
+                        } catch (error) {
+                            console.warn(`验证后检查临时目录失败: ${error.message}`);
                         }
                     }
                 }
@@ -229,9 +230,12 @@ class NursingWebServer {
                 if (!specificCaregivers || specificCaregivers.length === 0) {
                     return res.status(400).json({ success: false, message: '请至少配置一个护理员' });
                 }
-
+                const uploadsDir = this.uploadsDir;
                 // 创建历史记录
                 const historyId = this.createHistoryRecord({
+                    taskId:config.taskId,
+                    filePath,
+                    uploadsDir,
                     filename,
                     originalFilename: req.body.originalFilename || filename,
                     specificCaregivers,
@@ -241,7 +245,7 @@ class NursingWebServer {
                 });
 
                 // 异步处理，通过Socket.IO发送进度
-                this.processNursingData(historyId, filePath, specificCaregivers, config)
+                this.processNursingData(historyId, filePath, specificCaregivers, config,config.taskId)
                     .catch(error => console.error('处理异常:', error));
 
                 res.json({
@@ -306,7 +310,7 @@ class NursingWebServer {
 
                 // 读取历史记录
                 const historyRecord = JSON.parse(readFileSync(historyFilePath, 'utf8'));
-                const { filename, specificCaregivers, config } = historyRecord;
+                const { filename, specificCaregivers, config, taskId } = historyRecord;
 
                 // 检查原始文件是否还存在
                 const originalFilePath = join(this.uploadsDir, filename);
@@ -320,8 +324,13 @@ class NursingWebServer {
                     retryTime: new Date().toISOString()
                 });
 
-                // 生成任务ID（基于历史记录ID或者原始参数）
-                const taskIdForReuse = this.generateTaskId(filename, specificCaregivers);
+                // 始终使用历史记录中保存的任务ID（如果存在），确保护理员修改时仍能重用临时目录
+                const taskIdForReuse = taskId ;//|| this.generateTaskId(filename, specificCaregivers);
+
+                // 记录重试任务使用的护理员列表（用于调试）
+                if (taskId) {
+                    console.log(`🔄 重试任务 ${taskId}，护理员列表:`, specificCaregivers);
+                }
 
                 // 异步重新处理，使用相同的任务ID以重用临时目录
                 this.processNursingData(id, originalFilePath, specificCaregivers, config, taskIdForReuse)
@@ -381,6 +390,51 @@ class NursingWebServer {
 
                 const config = JSON.parse(readFileSync(configPath, 'utf8'));
                 res.json(config);
+            } catch (error) {
+                res.status(500).json({ success: false, message: error.message });
+            }
+        });
+
+        // 更新历史记录的护理员配置
+        this.app.patch('/api/history/:id/caregivers', (req, res) => {
+            try {
+                const { id } = req.params;
+                const { specificCaregivers } = req.body;
+
+                if (!specificCaregivers || !Array.isArray(specificCaregivers) || specificCaregivers.length === 0) {
+                    return res.status(400).json({
+                        success: false,
+                        message: '护理员列表不能为空'
+                    });
+                }
+
+                const historyFilePath = join(this.historyDir, `${id}.json`);
+
+                if (!existsSync(historyFilePath)) {
+                    return res.status(404).json({
+                        success: false,
+                        message: '历史记录不存在'
+                    });
+                }
+
+                // 更新历史记录中的护理员配置
+                this.updateHistoryRecord(id, {
+                    specificCaregivers: specificCaregivers,
+                    config: {
+                        ...JSON.parse(readFileSync(historyFilePath, 'utf8')).config,
+                        specificCaregivers: specificCaregivers
+                    },
+                    caregiversUpdated: true,
+                    caregiversUpdateTime: new Date().toISOString()
+                });
+
+                res.json({
+                    success: true,
+                    message: '护理员配置已更新，重试时将使用新的配置但仍会重用临时目录',
+                    data: {
+                        specificCaregivers
+                    }
+                });
             } catch (error) {
                 res.status(500).json({ success: false, message: error.message });
             }
@@ -452,7 +506,7 @@ class NursingWebServer {
             // 创建临时配置文件（如果提供了reuseTaskId则重用现有任务目录）
             const tempResult = this.createTempConfigFile(excelPath, specificCaregivers, customConfig, reuseTaskId);
             tempConfigPath = tempResult.configPath;
-            
+            this.updateHistoryRecord(historyId, {taskId:tempResult.configPath,taskId:historyId});
             // 创建护理系统实例
             const system = new NursingRegistrationSystem(tempConfigPath);
             
@@ -494,16 +548,15 @@ class NursingWebServer {
             // 发送错误事件
             this.io.emit('process-error', { historyId, error: error.message });
         } finally {
-            // 清理临时目录
+            // 不清理临时目录，保留所有文件（包括config.json和JSON数据文件）以供任务重启使用
             if (tempConfigPath) {
                 try {
                     const tempTaskDir = dirname(tempConfigPath);
                     if (existsSync(tempTaskDir)) {
-                        rmSync(tempTaskDir, { recursive: true, force: true });
-                        console.log('🗑️ 清理临时任务目录');
+                        console.log('📋 保留临时任务目录及所有文件以供任务重启使用');
                     }
-                } catch (cleanupError) {
-                    console.warn(`清理临时目录失败: ${cleanupError.message}`);
+                } catch (error) {
+                    console.warn(`检查临时目录失败: ${error.message}`);
                 }
             }
         }
@@ -579,16 +632,18 @@ class NursingWebServer {
      */
     createTempConfigFile(excelPath, specificCaregivers, customConfig, taskId = null) {
         const defaultConfig = JSON.parse(readFileSync(join(rootDir, 'config.json'), 'utf8'));
-        
-        // 生成任务ID：如果没有提供taskId，则基于文件名和护理员配置生成
+
+        // 生成任务ID：如果没有提供taskId，则仅基于Excel文件名生成（不依赖护理员配置）
         let actualTaskId;
         if (taskId) {
             actualTaskId = taskId;
         } else {
-            // 基于Excel文件名和护理员配置生成固定ID
+            // 基于Excel文件名和文件大小/修改时间生成固定ID（不依赖护理员配置），确保唯一性
             const excelFileName = excelPath.split(/[/\\]/).pop().replace(/\.(xls|xlsx)$/i, '');
-            const caregiversHash = specificCaregivers.sort().join('-').replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_');
-            actualTaskId = `${excelFileName}_${caregiversHash}`;
+            const fileStats = statSync(excelPath);
+            const fileSignature = `${fileStats.mtime.getTime()}`;
+            // const fileHash = createHash('md5').update(fileSignature).digest('hex').slice(0, 8);
+            actualTaskId = `${excelFileName}_${fileSignature}`;
         }
         
         const tempTaskDir = join(rootDir, 'temp', actualTaskId);
