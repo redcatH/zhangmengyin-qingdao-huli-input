@@ -17,9 +17,10 @@ export class ApiClient {
      * 通用HTTP请求方法
      * @param {string} url - 请求URL
      * @param {Object} options - 请求选项
+     * @param {boolean} forceText - 强制返回文本格式，不自动判断content-type
      * @returns {Promise<Object>} 响应数据
      */
-    async request(url, options = {}) {
+    async request(url, options = {}, forceText = false) {
         const requestOptions = {
             method: 'GET',
             headers: this.headers,
@@ -44,6 +45,12 @@ export class ApiClient {
                 throw error;
             }
 
+            // 如果强制使用文本格式，直接返回文本
+            if (forceText) {
+                return await response.text();
+            }
+
+            // 否则根据 content-type 自动判断
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
                 return await response.json();
@@ -91,14 +98,15 @@ export class ApiClient {
      * POST请求
      * @param {string} endpoint - API端点
      * @param {Object} data - 请求数据
+     * @param {boolean} forceText - 强制返回文本格式
      * @returns {Promise<Object>} 响应数据
      */
-    async post(endpoint, data = {}) {
+    async post(endpoint, data = {}, forceText = false) {
         const url = `${this.baseUrl}${endpoint}`;
         return this.request(url, {
             method: 'POST',
             body: data
-        });
+        }, forceText);
     }
 
     /**
@@ -241,9 +249,10 @@ export class ApiClient {
         try {
             this.logger.debug(`提交护理入住登记: ${checkinData.aac003}`);
             
-            const response = await this.post('/nursing/kh01/checkIn', checkinData);
+            // 强制使用文本格式解析响应（第三个参数为 true）
+            const response = await this.post('/nursing/kh01/checkIn', checkinData, true);
             
-            if (typeof response === 'string' && response.includes("本次业务办理成功")) {
+            if (response.includes("本次业务办理成功")) {
                 this.logger.debug(`登记成功: ${checkinData.aac003}`);
                 return { success: true, response };
             } else {
