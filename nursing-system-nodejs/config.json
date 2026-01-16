@@ -1,7 +1,7 @@
 {
   "api": {
     "baseUrl": "http://test.vssh.top/api/rest",
-    "token": "SESSION=YWY2MzFlM2MtNDg5MS00YWYwLTkzNzQtZGE4M2ZjMzhjYmFj",
+    "token": "SESSION=ZTcyMjg4ZGUtM2JhYS00ZGNmLWI2NzMtNTg3YTBkNGNkZmJm; account=H37021106950; password=",
     "referer": "http://10.78.226.94:8080/",
     "timeout": 30000
   },
